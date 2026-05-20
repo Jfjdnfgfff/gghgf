@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GSM Store Oran — Smartphones & Accessoires</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080d1a;
+      --bg2: #0d1526;
+      --bg3: #111c35;
+      --cyan: #00d4ff;
+      --cyan2: #00aacc;
+      --navy: #0a1628;
+      --card: rgba(13,21,38,0.85);
+      --border: rgba(0,212,255,0.15);
+      --text: #e8f4f8;
+      --muted: #7a9bb5;
+      --white: #ffffff;
+      --radius: 16px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--cyan2); border-radius: 3px; }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%;
+      height: 64px;
+      background: rgba(8,13,26,0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 13px; color: var(--bg);
+      box-shadow: 0 0 12px rgba(0,212,255,0.5);
+    }
+    .nav-logo-text { font-weight: 800; font-size: 18px; color: var(--white); letter-spacing: 0.5px; }
+    .nav-logo-sub { font-size: 10px; color: var(--cyan); letter-spacing: 2px; font-weight: 600; }
+
+    .nav-cart {
+      color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.2s;
+    }
+    .nav-cart:hover { color: var(--cyan); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 80px 5% 60px;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0,212,255,0.07) 0%, transparent 70%),
+                  linear-gradient(160deg, var(--bg) 0%, var(--bg2) 50%, var(--bg) 100%);
+      position: relative; overflow: hidden;
+      gap: 60px; flex-wrap: wrap;
+    }
+
+    /* Grid background */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+
+    .hero-text { flex: 1; min-width: 280px; max-width: 560px; position: relative; z-index: 2; }
+
+    .hero-title {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 900; line-height: 1.05; margin-bottom: 36px;
+      font-family: 'Cairo', sans-serif;
+    }
+    .hero-title .brand {
+      color: var(--cyan);
+      text-shadow: 0 0 40px rgba(0,212,255,0.6), 0 0 80px rgba(0,212,255,0.3);
+      display: block;
+    }
+    .hero-title .sub {
+      display: block; font-size: 0.45em; font-weight: 400;
+      color: var(--muted); margin-top: 10px; letter-spacing: 1px;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2);
+      color: var(--cyan); font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      padding: 6px 16px; border-radius: 20px; margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+    .hero-tag-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--cyan);
+      animation: dot-blink 2s ease-in-out infinite;
+    }
+    @keyframes dot-blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(1.5); }
+    }
+
+    .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+      color: var(--bg); font-weight: 700; font-size: 15px;
+      padding: 14px 28px; border-radius: 28px; text-decoration: none;
+      box-shadow: 0 0 24px rgba(0,212,255,0.4);
+      transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; border: none;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(0,212,255,0.6); }
+
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent;
+      color: var(--white); font-weight: 600; font-size: 15px;
+      padding: 14px 28px; border-radius: 28px; text-decoration: none;
+      border: 1px solid rgba(0,212,255,0.3);
+      transition: all 0.2s; cursor: pointer;
+    }
+    .btn-secondary:hover { background: rgba(0,212,255,0.08); border-color: var(--cyan); }
+
+    /* ─── Animated Phone ─── */
+    .hero-phone { position: relative; z-index: 2; flex-shrink: 0; }
+
+    /* ─── EPIC PHONE ─── */
+    .hero-phone { position: relative; z-index: 2; flex-shrink: 0; }
+
+    .phone-scene {
+      perspective: 900px;
+      width: 240px; height: 500px;
+      position: relative;
+    }
+
+    .phone-3d {
+      width: 100%; height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: phone-3d-tilt 8s ease-in-out infinite;
+    }
+
+    @keyframes phone-3d-tilt {
+      0%   { transform: rotateY(-14deg) rotateX(5deg)  translateY(0px); }
+      25%  { transform: rotateY(4deg)   rotateX(-3deg) translateY(-16px); }
+      50%  { transform: rotateY(16deg)  rotateX(5deg)  translateY(-24px); }
+      75%  { transform: rotateY(4deg)   rotateX(-3deg) translateY(-10px); }
+      100% { transform: rotateY(-14deg) rotateX(5deg)  translateY(0px); }
+    }
+
+    /* Orbits */
+    .phone-orbits { position: absolute; top: 50%; left: 50%; width: 0; height: 0; pointer-events: none; }
+    .orbit { position: absolute; border-radius: 50%; border: 1px solid rgba(0,212,255,0.35); }
+    .orbit-1 { width: 360px; height: 90px; margin: -45px 0 0 -180px; animation: orb-h 5s linear infinite; box-shadow: 0 0 8px rgba(0,212,255,0.15); }
+    .orbit-2 { width: 90px; height: 420px; margin: -210px 0 0 -45px; animation: orb-v 7s linear infinite reverse; border-color: rgba(0,150,255,0.3); }
+    .orbit-3 { width: 310px; height: 310px; margin: -155px 0 0 -155px; animation: orb-d 10s linear infinite; border-color: rgba(0,212,255,0.18); }
+    @keyframes orb-h { from { transform: rotateX(76deg) rotateZ(0deg); } to { transform: rotateX(76deg) rotateZ(360deg); } }
+    @keyframes orb-v { from { transform: rotateY(78deg) rotateZ(0deg); } to { transform: rotateY(78deg) rotateZ(360deg); } }
+    @keyframes orb-d { from { transform: rotateX(70deg) rotateZ(0deg); } to { transform: rotateX(70deg) rotateZ(-360deg); } }
+
+    /* Aura */
+    .phone-aura {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 210px; height: 430px; border-radius: 52px;
+      filter: blur(45px); pointer-events: none; z-index: 0;
+      animation: aura-breathe 4s ease-in-out infinite;
+    }
+    @keyframes aura-breathe {
+      0%, 100% { background: rgba(0,212,255,0.2);  opacity: 0.7; }
+      50%       { background: rgba(0,120,255,0.32); opacity: 1; }
+    }
+
+    /* Body */
+    .phone-body {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 195px; height: 415px;
+      background: linear-gradient(160deg, #1e3052 0%, #0c1828 50%, #05090f 100%);
+      border-radius: 42px;
+      box-shadow:
+        0 0 0 2px rgba(0,212,255,0.65),
+        0 0 55px rgba(0,212,255,0.4),
+        0 0 110px rgba(0,212,255,0.2),
+        inset 0 0 35px rgba(0,212,255,0.07);
+      overflow: hidden; z-index: 2;
+      animation: body-pulse 3s ease-in-out infinite;
+    }
+    @keyframes body-pulse {
+      0%,100% { box-shadow: 0 0 0 2px rgba(0,212,255,0.65), 0 0 55px rgba(0,212,255,0.4),  0 0 110px rgba(0,212,255,0.2),  inset 0 0 35px rgba(0,212,255,0.07); }
+      50%      { box-shadow: 0 0 0 2px rgba(0,212,255,1),    0 0 80px rgba(0,212,255,0.65), 0 0 160px rgba(0,212,255,0.35), inset 0 0 50px rgba(0,212,255,0.14); }
+    }
+
+    /* Screen */
+    .phone-screen {
+      position: absolute;
+      top: 14px; left: 10px; right: 10px; bottom: 14px;
+      background: #030710;
+      border-radius: 32px; overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .phone-screen-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.07) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .phone-scan {
+      position: absolute; left: 0; right: 0; top: -100px;
+      height: 90px;
+      background: linear-gradient(to bottom, transparent, rgba(0,212,255,0.15) 50%, transparent);
+      animation: scan-move 3s ease-in-out infinite;
+    }
+    @keyframes scan-move {
+      0%   { top: -90px;  opacity: 1; }
+      85%  { opacity: 1; }
+      100% { top: 110%;   opacity: 0; }
+    }
+    .phone-status {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 26px; padding: 6px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 9px; color: var(--cyan); font-weight: 700; letter-spacing: 0.5px;
+      background: rgba(0,212,255,0.06);
+    }
+    .phone-content {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .phone-icon {
+      width: 58px; height: 58px;
+      background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 13px; color: var(--bg);
+      box-shadow: 0 0 28px rgba(0,212,255,0.9), 0 0 56px rgba(0,212,255,0.5);
+      animation: icon-pulse 2.5s ease-in-out infinite alternate;
+    }
+    @keyframes icon-pulse {
+      from { box-shadow: 0 0 28px rgba(0,212,255,0.9), 0 0 56px rgba(0,212,255,0.5); transform: scale(1); }
+      to   { box-shadow: 0 0 42px rgba(0,212,255,1),   0 0 84px rgba(0,212,255,0.7); transform: scale(1.07); }
+    }
+    .phone-name { font-size: 13px; font-weight: 800; color: #fff; letter-spacing: 1.5px; }
+    .phone-city { font-size: 8px; color: var(--cyan); letter-spacing: 3px; }
+
+    /* Particles */
+    .phone-particle {
+      position: absolute; border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 6px rgba(0,212,255,0.9);
+      pointer-events: none;
+      animation: ptcl ease-in-out infinite;
+    }
+    .phone-particle:nth-child(1) { width:4px;height:4px; left:8%;   bottom:0; animation-duration:4s;   animation-delay:0s; }
+    .phone-particle:nth-child(2) { width:3px;height:3px; left:22%;  bottom:0; animation-duration:5s;   animation-delay:0.8s;  background:rgba(0,150,255,1); }
+    .phone-particle:nth-child(3) { width:5px;height:5px; left:50%;  bottom:0; animation-duration:3.5s; animation-delay:1.6s; }
+    .phone-particle:nth-child(4) { width:3px;height:3px; left:70%;  bottom:0; animation-duration:4.5s; animation-delay:2.4s; }
+    .phone-particle:nth-child(5) { width:4px;height:4px; left:85%;  bottom:0; animation-duration:5.2s; animation-delay:0.4s;  background:rgba(0,200,255,1); }
+    .phone-particle:nth-child(6) { width:2px;height:2px; left:38%;  bottom:0; animation-duration:3.8s; animation-delay:3.2s; }
+    .phone-particle:nth-child(7) { width:4px;height:4px; left:62%;  bottom:0; animation-duration:4.2s; animation-delay:4.0s; }
+    .phone-particle:nth-child(8) { width:3px;height:3px; left:18%;  bottom:0; animation-duration:5.5s; animation-delay:1.2s; }
+    @keyframes ptcl {
+      0%   { opacity:0; transform:translateY(0)    scale(0); }
+      8%   { opacity:1; transform:translateY(-20px) scale(1); }
+      90%  { opacity:0.3; }
+      100% { opacity:0; transform:translateY(-420px) scale(0.2); }
+    }
+
+    /* Ground glow */
+    .phone-ground {
+      position: absolute; bottom: -35px; left: 50%;
+      transform: translateX(-50%);
+      width: 200px; height: 35px;
+      background: radial-gradient(ellipse, rgba(0,212,255,0.55) 0%, transparent 70%);
+      filter: blur(14px);
+      animation: ground-breathe 4s ease-in-out infinite;
+    }
+    @keyframes ground-breathe {
+      0%,100% { width:170px; opacity:0.65; }
+      50%      { width:240px; opacity:1; }
+    }
+
+    /* ─── SECTIONS ─── */
+    section { padding: 80px 5%; }
+
+    .section-header { text-align: center; margin-bottom: 56px; }
+    .section-tag {
+      display: inline-block;
+      background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25);
+      color: var(--cyan); font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      padding: 5px 14px; border-radius: 20px; margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    .section-title { font-size: clamp(24px, 3.5vw, 40px); font-weight: 800; color: var(--white); }
+    .section-title span { color: var(--cyan); }
+    .section-desc { font-size: 15px; color: var(--muted); margin-top: 12px; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+
+    /* ─── SERVICES ─── */
+    #services { background: var(--bg2); }
+
+    .services-list {
+      list-style: none;
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      direction: rtl;
+    }
+    .service-item {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 28px;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--white);
+      backdrop-filter: blur(10px);
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .service-item::before {
+      content: '';
+      position: absolute; top: 0; right: 0; bottom: 0; width: 3px;
+      background: linear-gradient(to bottom, var(--cyan), var(--cyan2));
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    .service-item:hover {
+      border-color: rgba(0,212,255,0.45);
+      transform: translateX(-4px);
+      box-shadow: 0 8px 32px rgba(0,212,255,0.12);
+    }
+    .service-bullet {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: rgba(0,212,255,0.12);
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--cyan); font-size: 16px;
+    }
+
+    /* ─── CATEGORIES ─── */
+    #categories { background: var(--bg); }
+    .categories-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .cat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 52px 24px;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .cat-card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .cat-card:hover { transform: translateY(-8px); border-color: rgba(0,212,255,0.5); box-shadow: 0 24px 56px rgba(0,212,255,0.15); }
+    .cat-card:hover::after { opacity: 1; }
+    .cat-icon { font-size: 52px; margin-bottom: 18px; }
+    .cat-title { font-size: 22px; font-weight: 800; color: var(--white); margin-bottom: 6px; font-family: 'Cairo', sans-serif; }
+    .cat-sub { font-size: 12px; color: var(--cyan); letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
+    @media (max-width: 500px) {
+      .categories-grid { grid-template-columns: 1fr; }
+      .cat-card { padding: 36px 24px; }
+    }
+
+    /* ─── PHONE LIGHT RAYS ─── */
+    .phone-rays {
+      position: absolute; top: 50%; left: 50%;
+      width: 0; height: 0;
+      pointer-events: none; z-index: 1;
+    }
+    .phone-ray {
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px;
+      height: 180px;
+      margin-left: -1px;
+      background: linear-gradient(to bottom, rgba(0,212,255,0.55), transparent);
+      transform-origin: top center;
+      border-radius: 1px;
+    }
+    .phone-ray:nth-child(1) { transform: rotate(0deg);   animation: ray-spin 8s linear infinite; }
+    .phone-ray:nth-child(2) { transform: rotate(60deg);  animation: ray-spin 8s linear infinite; animation-delay: -1.33s; }
+    .phone-ray:nth-child(3) { transform: rotate(120deg); animation: ray-spin 8s linear infinite; animation-delay: -2.66s; }
+    .phone-ray:nth-child(4) { transform: rotate(180deg); animation: ray-spin 8s linear infinite; animation-delay: -4s; }
+    .phone-ray:nth-child(5) { transform: rotate(240deg); animation: ray-spin 8s linear infinite; animation-delay: -5.33s; }
+    .phone-ray:nth-child(6) { transform: rotate(300deg); animation: ray-spin 8s linear infinite; animation-delay: -6.66s; }
+    @keyframes ray-spin {
+      0%   { opacity: 0.8; }
+      50%  { opacity: 0.2; }
+      100% { opacity: 0.8; }
+    }
+    .phone-glow-ring {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 1px solid rgba(0,212,255,0.4);
+      animation: glow-pulse 2s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    .phone-glow-ring:nth-child(1) { width: 220px; height: 220px; animation-delay: 0s; }
+    .phone-glow-ring:nth-child(2) { width: 300px; height: 300px; animation-delay: 0.4s; border-color: rgba(0,212,255,0.25); }
+    .phone-glow-ring:nth-child(3) { width: 380px; height: 380px; animation-delay: 0.8s; border-color: rgba(0,212,255,0.12); }
+    @keyframes glow-pulse {
+      from { box-shadow: 0 0 0px rgba(0,212,255,0); }
+      to   { box-shadow: 0 0 20px rgba(0,212,255,0.3); }
+    }
+
+    /* ─── SHOP ─── */
+    #shop { background: var(--bg); }
+
+    .shop-tabs {
+      display: flex; justify-content: center; gap: 10px; margin-bottom: 40px;
+    }
+    .tab-btn {
+      padding: 8px 22px; border-radius: 20px; font-size: 13px; font-weight: 600;
+      border: 1px solid rgba(0,212,255,0.25);
+      background: transparent; color: var(--muted); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+      color: var(--bg); border-color: transparent;
+      box-shadow: 0 0 16px rgba(0,212,255,0.35);
+    }
+    .tab-btn:hover:not(.active) { color: var(--cyan); border-color: rgba(0,212,255,0.4); }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px; max-width: 1200px; margin: 0 auto;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .product-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    }
+    .product-card:hover { transform: translateY(-6px); box-shadow: 0 20px 56px rgba(0,0,0,0.4); border-color: rgba(0,212,255,0.3); }
+
+    .product-img-wrap {
+      position: relative; height: 200px; overflow: hidden;
+    }
+    .product-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.5s;
+    }
+    .product-card:hover .product-img-wrap img { transform: scale(1.06); }
+
+    .product-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(8,13,26,0.85) 0%, transparent 50%);
+    }
+
+    .product-info { padding: 20px; }
+    .product-name { font-size: 16px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+    .product-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
+    .product-footer { display: flex; align-items: center; justify-content: space-between; }
+    .product-price { font-size: 18px; font-weight: 800; color: var(--cyan); }
+    .product-price span { font-size: 11px; font-weight: 500; color: var(--muted); }
+
+    .btn-order {
+      background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+      color: var(--bg); font-weight: 700; font-size: 12px;
+      padding: 8px 16px; border-radius: 16px; border: none; cursor: pointer;
+      box-shadow: 0 0 12px rgba(0,212,255,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-order:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0,212,255,0.5); }
+
+    /* ─── CHECKOUT ─── */
+    #checkout {
+      background: var(--bg2);
+      direction: rtl;
+    }
+
+    .checkout-wrap {
+      max-width: 680px; margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 44px 40px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+    }
+
+    .checkout-title {
+      font-family: 'Cairo', sans-serif;
+      font-size: 26px; font-weight: 800; color: var(--white);
+      text-align: center; margin-bottom: 8px;
+    }
+    .checkout-sub {
+      font-family: 'Cairo', sans-serif;
+      font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 32px; line-height: 1.6;
+    }
+
+    .order-box {
+      background: rgba(0,212,255,0.05);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: 'Cairo', sans-serif;
+    }
+    .order-box-label { font-size: 13px; color: var(--muted); }
+    .order-box-value { font-size: 15px; font-weight: 700; color: var(--cyan); }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid.full { grid-template-columns: 1fr; }
+
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label {
+      font-family: 'Cairo', sans-serif;
+      font-size: 13px; font-weight: 600; color: var(--text);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 10px; padding: 12px 14px;
+      color: var(--text); font-size: 14px;
+      font-family: 'Cairo', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none; width: 100%;
+      direction: rtl;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0,212,255,0.12);
+    }
+    .form-group select option { background: var(--bg2); }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    .btn-whatsapp {
+      width: 100%; padding: 16px;
+      background: linear-gradient(135deg, #25d366, #128c7e);
+      color: white; font-size: 16px; font-weight: 700;
+      font-family: 'Cairo', sans-serif;
+      border: none; border-radius: 14px; cursor: pointer;
+      box-shadow: 0 0 24px rgba(37,211,102,0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-top: 8px;
+    }
+    .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(37,211,102,0.55); }
+
+    .form-note {
+      font-family: 'Cairo', sans-serif;
+      font-size: 12px; color: var(--muted); text-align: center; margin-top: 12px; line-height: 1.6;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 48px 5%;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 24px;
+    }
+    .footer-logo-name { font-size: 20px; font-weight: 800; color: var(--white); }
+    .footer-logo-sub { font-size: 11px; color: var(--cyan); letter-spacing: 2px; margin-top: 2px; }
+    .footer-copy { font-size: 12px; color: var(--muted); text-align: center; }
+    .footer-socials { display: flex; gap: 12px; }
+    .social-btn {
+      width: 40px; height: 40px; border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(0,212,255,0.06);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); text-decoration: none; font-size: 16px;
+      transition: all 0.2s;
+    }
+    .social-btn:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,255,0.12); transform: translateY(-2px); }
+
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .hero { flex-direction: column; text-align: center; padding-top: 100px; gap: 40px; }
+      .hero-buttons { justify-content: center; }
+      .stats { justify-content: center; }
+      .checkout-wrap { padding: 28px 20px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════ NAVBAR ═══════════════════ -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-text" style="font-size:22px; font-weight:800; letter-spacing:1px;">
+      <span style="color:var(--cyan);">GSM</span> STORE
+    </div>
+  </a>
+  <a href="#checkout" class="nav-cart" title="Panier">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9m-9-4h4"/>
+    </svg>
+  </a>
+</nav>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-text">
+    <div class="hero-tag">
+      <span class="hero-tag-dot"></span>
+      وهران · الجزائر
+    </div>
+    <h1 class="hero-title">
+      <span class="brand">GSM Store</span>
+      <span class="sub">أفضل متجر هواتف في وهران</span>
+    </h1>
+    <div class="hero-buttons">
+      <a class="btn-primary" href="#shop">🛒 تصفح المنتجات</a>
+      <a class="btn-secondary" href="#checkout">📲 اطلب عبر واتساب</a>
+    </div>
+  </div>
+
+  <!-- Epic Phone Animation -->
+  <div class="hero-phone">
+    <div class="phone-scene">
+      <div class="phone-3d">
+        <!-- Orbit rings -->
+        <div class="phone-orbits">
+          <div class="orbit orbit-1"></div>
+          <div class="orbit orbit-2"></div>
+          <div class="orbit orbit-3"></div>
+        </div>
+        <!-- Aura glow -->
+        <div class="phone-aura"></div>
+        <!-- Phone body -->
+        <div class="phone-body">
+          <div class="phone-screen">
+            <div class="phone-screen-grid"></div>
+            <div class="phone-scan"></div>
+            <div class="phone-status">
+              <span>9:41</span><span>5G ●●●</span>
+            </div>
+            <div class="phone-content">
+              <div class="phone-icon">GSM</div>
+              <div class="phone-name">GSM STORE</div>
+              <div class="phone-city">ORAN · ALGÉRIE</div>
+            </div>
+          </div>
+        </div>
+        <!-- Floating particles -->
+        <div class="phone-particle"></div>
+        <div class="phone-particle"></div>
+        <div class="phone-particle"></div>
+        <div class="phone-particle"></div>
+        <div class="phone-particle"></div>
+        <div class="phone-particle"></div>
+        <div class="phone-particle"></div>
+        <div class="phone-particle"></div>
+        <!-- Ground glow -->
+        <div class="phone-ground"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ SERVICES ═══════════════════ -->
+<section id="services">
+  <div class="section-header">
+    <div class="section-tag">خدماتنا</div>
+    <h2 class="section-title">ما نقدمه في <span>GSM Store</span></h2>
+  </div>
+  <ul class="services-list">
+    <li class="service-item">
+      <span class="service-bullet">📱</span>
+      بيع شراء و استبدال الهواتف
+    </li>
+    <li class="service-item">
+      <span class="service-bullet">🔧</span>
+      إصلاح و صيانة
+    </li>
+    <li class="service-item">
+      <span class="service-bullet">⚡</span>
+      فلاش و ديبلوكاج
+    </li>
+    <li class="service-item">
+      <span class="service-bullet">🔓</span>
+      فك تشفير الهواتف
+    </li>
+  </ul>
+</section>
+
+
+<!-- ═══════════════════ SHOP ═══════════════════ -->
+<section id="shop">
+  <div class="section-header">
+    <div class="section-tag">Boutique</div>
+    <h2 class="section-title">Notre <span>Catalogue</span></h2>
+    <p class="section-desc">اختر هاتفك أو إكسسواراتك — Choisissez votre smartphone ou accessoire.</p>
+  </div>
+
+  <div class="shop-tabs">
+    <button class="tab-btn active" onclick="switchTab('phones')">📱 Téléphones</button>
+    <button class="tab-btn" onclick="switchTab('accessories')">🎧 Accessoires</button>
+  </div>
+
+  <div id="tab-phones" class="tab-panel active">
+    <div class="products-grid" id="phones-grid"></div>
+  </div>
+  <div id="tab-accessories" class="tab-panel">
+    <div class="products-grid" id="accessories-grid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CHECKOUT ═══════════════════ -->
+<section id="checkout">
+  <div class="section-header" style="direction:ltr">
+    <div class="section-tag">طلب عبر واتساب</div>
+    <h2 class="section-title">اطلب <span>الآن</span></h2>
+    <p class="section-desc">أكمل النموذج وسيتم تحويلك مباشرة إلى واتساب لإتمام الطلب</p>
+  </div>
+
+  <div class="checkout-wrap">
+    <h3 class="checkout-title">📦 نموذج الطلب</h3>
+    <p class="checkout-sub">يرجى ملء البيانات التالية وسنتواصل معك عبر WhatsApp لتأكيد الطلب</p>
+
+    <div class="order-box" id="order-summary-box" style="display:none">
+      <span class="order-box-label">المنتج المحدد:</span>
+      <span class="order-box-value" id="order-summary-text">—</span>
+    </div>
+
+    <form id="order-form" onsubmit="submitOrder(event)">
+      <div class="form-grid" style="margin-bottom:16px">
+        <div class="form-group">
+          <label>الاسم الكامل *</label>
+          <input type="text" id="field-name" placeholder="مثال: أحمد بن علي" required />
+        </div>
+        <div class="form-group">
+          <label>رقم الهاتف *</label>
+          <input type="tel" id="field-phone" placeholder="0555 123 456" required />
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-bottom:16px">
+        <div class="form-group">
+          <label>المنتج المطلوب *</label>
+          <input type="text" id="field-product" placeholder="مثال: iPhone 15 Pro Max" required />
+        </div>
+        <div class="form-group">
+          <label>الولاية *</label>
+          <select id="field-wilaya" required>
+            <option value="">-- اختر الولاية --</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid full" style="margin-bottom:16px">
+        <div class="form-group">
+          <label>العنوان الكامل *</label>
+          <input type="text" id="field-address" placeholder="الحي، الشارع، رقم المنزل..." required />
+        </div>
+      </div>
+
+      <div class="form-grid full" style="margin-bottom:24px">
+        <div class="form-group">
+          <label>ملاحظات إضافية</label>
+          <textarea id="field-notes" placeholder="أي تفاصيل إضافية حول طلبك..."></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-whatsapp">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        إرسال الطلب عبر واتساب
+      </button>
+      <p class="form-note">سيتم فتح واتساب تلقائياً بتفاصيل طلبك • الرقم: <strong style="color:var(--cyan)">+213 793 684 017</strong></p>
+    </form>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo-name">GSM Store Oran</div>
+      <div class="footer-logo-sub">SMARTPHONES &amp; ACCESSOIRES</div>
+    </div>
+    <div class="footer-copy">
+      © 2025 GSM Store Oran · وهران، الجزائر<br>
+      <span style="color:var(--cyan)">+213 793 684 017</span>
+    </div>
+    <div class="footer-socials">
+      <a class="social-btn" href="https://www.instagram.com/gsm_store_oran" target="_blank" title="Instagram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      </a>
+      <a class="social-btn" href="https://www.tiktok.com/@gsm_store_oran?_r=1&_t=ZS-96WTOmZ906u" target="_blank" title="TikTok">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/></svg>
+      </a>
+      <a class="social-btn" href="https://mail.google.com/mail/?view=cm&to=sabircava@gmail.com" target="_blank" title="Email">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      </a>
+      <a class="social-btn" href="https://www.ouedkniss.com/store/8850/gsm-store/accueil" target="_blank" title="Ouedkniss">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      </a>
+      <a class="social-btn" href="https://wa.me/213793684017" target="_blank" title="WhatsApp">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════ DATA ═══════════════════
+var phones = [
+  { id:"ph1", name:"iPhone 15 Pro Max", price:230000, desc:"Design titane, puce A17 Pro, appareil photo 48 MP. L'excellence Apple.", img:"https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&q=80" },
+  { id:"ph2", name:"Samsung Galaxy S24 Ultra", price:220000, desc:"Galaxy AI, stylet S Pen intégré, corps titane, caméra 200 MP.", img:"https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&q=80" },
+  { id:"ph3", name:"Xiaomi 14 Pro", price:145000, desc:"Optiques Leica, Snapdragon 8 Gen 3, charge ultra-rapide 120W.", img:"https://images.unsplash.com/photo-1567581935884-3349723552ca?w=600&q=80" },
+  { id:"ph4", name:"iPhone 14", price:165000, desc:"Puce A15 Bionic, mode Action, double SIM, autonomie exceptionnelle.", img:"https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=600&q=80" },
+  { id:"ph5", name:"Samsung Galaxy A55", price:72000, desc:"Écran AMOLED 120 Hz, triple caméra 50 MP, IP67, 5G.", img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80" },
+  { id:"ph6", name:"Redmi Note 13 Pro", price:55000, desc:"Caméra 200 MP, charge 67W, écran AMOLED 6.67 pouces.", img:"https://images.unsplash.com/photo-1585060544812-6b45742d762f?w=600&q=80" }
+];
+
+var accessories = [
+  { id:"a1", name:"Verre Trempé 9H — زجاج مقوى", price:1200, desc:"Protection maximale contre les chocs et les rayures.", img:"https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=600&q=80" },
+  { id:"a2", name:"Coque Silicone Premium — غطاء سيليكون", price:1800, desc:"Protection souple et résistante, compatible avec tous les modèles.", img:"https://images.unsplash.com/photo-1541877944-ac82a091518a?w=600&q=80" },
+  { id:"a3", name:"Câble USB-C 120W — كابل شحن سريع", price:2500, desc:"Charge rapide 120W, nylon tressé ultra-résistant, 1.5m.", img:"https://images.unsplash.com/photo-1605464315542-bda3e2f4e605?w=600&q=80" },
+  { id:"a4", name:"Powerbank 20000mAh — باور بانك", price:9500, desc:"Double sortie USB-C + USB-A, charge rapide 22.5W intégrée.", img:"https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=600&q=80" },
+  { id:"a5", name:"Chargeur Sans Fil 15W — شاحن لاسلكي", price:7200, desc:"Compatible MagSafe & Qi, charge rapide sans fil toutes marques.", img:"https://images.unsplash.com/photo-1586816879360-004f5b0c51e3?w=600&q=80" },
+  { id:"a6", name:"Support Voiture Magnétique — حامل مغناطيسي", price:3200, desc:"Fixation magnétique puissante, rotation 360°, universel.", img:"https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=600&q=80" }
+];
+
+var wilayas = [
+  "Adrar","Chlef","Laghouat","Oum El Bouaghi","Batna","Béjaïa","Biskra","Béchar","Blida","Bouira",
+  "Tamanrasset","Tébessa","Tlemcen","Tiaret","Tizi Ouzou","Alger","Djelfa","Jijel","Sétif","Saïda",
+  "Skikda","Sidi Bel Abbès","Annaba","Guelma","Constantine","Médéa","Mostaganem","M'Sila","Mascara",
+  "Ouargla","Oran","El Bayadh","Illizi","Bordj Bou Arreridj","Boumerdès","El Tarf","Tindouf",
+  "Tissemsilt","El Oued","Khenchela","Souk Ahras","Tipaza","Mila","Aïn Defla","Naâma",
+  "Aïn Témouchent","Ghardaïa","Relizane","Timimoun","Bordj Badji Mokhtar","Ouled Djellal",
+  "Béni Abbès","In Salah","In Guezzam","Touggourt","Djanet","El M'Ghair","El Meniaa"
+];
+
+// ═══════════════════ RENDER PRODUCTS ═══════════════════
+function formatPrice(p) {
+  return p.toLocaleString('fr-DZ') + ' <span>DA</span>';
+}
+
+function renderProducts(list, containerId) {
+  var grid = document.getElementById(containerId);
+  grid.innerHTML = list.map(function(p) {
+    return '<div class="product-card">' +
+      '<div class="product-img-wrap">' +
+        '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" />' +
+        '<div class="product-overlay"></div>' +
+      '</div>' +
+      '<div class="product-info">' +
+        '<div class="product-name">' + p.name + '</div>' +
+        '<div class="product-desc">' + p.desc + '</div>' +
+        '<div class="product-footer">' +
+          '<div class="product-price">' + formatPrice(p.price) + '</div>' +
+          '<button class="btn-order" onclick="selectProduct(\'' + p.name.replace(/'/g,"&#39;") + '\',' + p.price + ')">🛒 Commander</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ═══════════════════ POPULATE WILAYAS ═══════════════════
+function populateWilayas() {
+  var sel = document.getElementById('field-wilaya');
+  wilayas.forEach(function(w, i) {
+    var opt = document.createElement('option');
+    opt.value = w;
+    opt.textContent = (i + 1) + '. ' + w;
+    sel.appendChild(opt);
+  });
+}
+
+// ═══════════════════ TABS ═══════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(function(panel) { panel.classList.remove('active'); });
+  var activeBtn = (tab === 'phones') ? document.querySelectorAll('.tab-btn')[0] : document.querySelectorAll('.tab-btn')[1];
+  activeBtn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// ═══════════════════ SELECT PRODUCT ═══════════════════
+function selectProduct(name, price) {
+  var field = document.getElementById('field-product');
+  field.value = name;
+  var box = document.getElementById('order-summary-box');
+  var text = document.getElementById('order-summary-text');
+  box.style.display = 'flex';
+  text.textContent = name + ' — ' + price.toLocaleString('fr-DZ') + ' DA';
+  var checkout = document.getElementById('checkout');
+  checkout.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ═══════════════════ SUBMIT ORDER ═══════════════════
+function submitOrder(e) {
+  e.preventDefault();
+  var name    = document.getElementById('field-name').value.trim();
+  var phone   = document.getElementById('field-phone').value.trim();
+  var product = document.getElementById('field-product').value.trim();
+  var wilaya  = document.getElementById('field-wilaya').value;
+  var address = document.getElementById('field-address').value.trim();
+  var notes   = document.getElementById('field-notes').value.trim();
+
+  var msg = '🛍️ *طلب جديد — GSM Store Oran*\n\n' +
+    '👤 *الاسم:* ' + name + '\n' +
+    '📞 *الهاتف:* ' + phone + '\n' +
+    '📦 *المنتج:* ' + product + '\n' +
+    '📍 *الولاية:* ' + wilaya + '\n' +
+    '🏠 *العنوان:* ' + address + '\n' +
+    (notes ? '📝 *ملاحظات:* ' + notes + '\n' : '') +
+    '\n✅ أرجو تأكيد الطلب وإعلامي بتكاليف الشحن. شكراً!';
+
+  var url = 'https://wa.me/213793684017?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+}
+
+// ═══════════════════ INIT ═══════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  renderProducts(phones, 'phones-grid');
+  renderProducts(accessories, 'accessories-grid');
+  populateWilayas();
+});
+</script>
+</body>
+</html>
