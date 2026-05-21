@@ -909,6 +909,9 @@
       .footer-inner { flex-direction: column; text-align: center; }
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
@@ -1174,7 +1177,7 @@
 <footer>
   <div class="footer-inner">
     <div>
-      <img src="https://i.ibb.co/fGdVP21m/IMG-4887.png" alt="GSM Store Oran"> style="height:48px; width:auto; object-fit:contain; display:block; margin:0 auto 6px auto; filter:invert(1) hue-rotate(180deg);" />
+      <img src="https://i.ibb.co/fGdVP21m/IMG-4887.png" alt="GSM Store Oran" style="height:52px; width:auto; object-fit:contain; display:block; margin:0 auto 6px auto; filter:invert(1) hue-rotate(180deg);" />
       <div class="footer-logo-sub">SMARTPHONES &amp; ACCESSOIRES</div>
     </div>
     <div class="footer-copy">
@@ -1202,6 +1205,20 @@
 </footer>
 
 <script>
+// ═══════════════════ FIREBASE ═══════════════════
+var firebaseConfig = {
+  apiKey: "AIzaSyDolFoBvTF1LY9K1lZGyZ5UqVED_Xr2VVw",
+  authDomain: "goldnutrition-ec192.firebaseapp.com",
+  databaseURL: "https://goldnutrition-ec192-default-rtdb.firebaseio.com",
+  projectId: "goldnutrition-ec192",
+  storageBucket: "goldnutrition-ec192.firebasestorage.app",
+  messagingSenderId: "208596159029",
+  appId: "1:208596159029:web:9659c4f966891cb1b13f7c",
+  measurementId: "G-M8WFQXG63D"
+};
+firebase.initializeApp(firebaseConfig);
+var db = firebase.database();
+
 // ═══════════════════ DATA ═══════════════════
 var phones = [
   { id:"ph1", name:"iPhone 15 Pro Max", price:230000, desc:"Design titane, puce A17 Pro, appareil photo 48 MP. L'excellence Apple.", img:"https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&q=80" },
@@ -1456,55 +1473,111 @@ var defaultAccessories = [
   { id:"a6", name:"Support Voiture Magnétique — حامل مغناطيسي", price:3200, desc:"Fixation magnétique puissante, rotation 360°, universel.", img:"https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=600&q=80" }
 ];
 
-function loadData() {
-  try {
-    var sp = localStorage.getItem('gsm_phones');
-    var sa = localStorage.getItem('gsm_accessories');
-    var se = localStorage.getItem('gsm_exchange');
-    if (sp) phones = JSON.parse(sp);
-    else phones = defaultPhones.map(function(p){ return Object.assign({},p); });
-    if (sa) accessories = JSON.parse(sa);
-    else accessories = defaultAccessories.map(function(a){ return Object.assign({},a); });
-    if (se) excPhones = JSON.parse(se);
-  } catch(e) {
-    phones = defaultPhones.map(function(p){ return Object.assign({},p); });
-    accessories = defaultAccessories.map(function(a){ return Object.assign({},a); });
-  }
+function refreshExcSelects() {
+  var cur = document.getElementById('exc-current-phone');
+  var des = document.getElementById('exc-desired-phone');
+  if (!cur || !des) return;
+  while (cur.options.length > 1) cur.remove(1);
+  while (des.options.length > 1) des.remove(1);
+  excPopulateSelects();
+  admRefreshExcSelects();
 }
+
+function loadData() {
+  /* عرض البيانات الافتراضية فوراً */
+  phones      = defaultPhones.map(function(p){ return Object.assign({},p); });
+  accessories = defaultAccessories.map(function(a){ return Object.assign({},a); });
+  renderProducts(phones, 'phones-grid');
+  renderProducts(accessories, 'accessories-grid');
+  refreshExcSelects();
+
+  /* تحديث من Firebase عند وصول البيانات */
+  db.ref('gsm_phones').on('value', function(snap) {
+    var data = snap.val();
+    if (data) {
+      phones = Array.isArray(data) ? data.filter(Boolean) : Object.values(data).filter(Boolean);
+      renderProducts(phones, 'phones-grid');
+    } else {
+      db.ref('gsm_phones').set(phones);
+    }
+  }, function() { /* تجاهل خطأ القراءة والاستمرار بالبيانات الافتراضية */ });
+
+  db.ref('gsm_accessories').on('value', function(snap) {
+    var data = snap.val();
+    if (data) {
+      accessories = Array.isArray(data) ? data.filter(Boolean) : Object.values(data).filter(Boolean);
+      renderProducts(accessories, 'accessories-grid');
+    } else {
+      db.ref('gsm_accessories').set(accessories);
+    }
+  }, function() {});
+
+  db.ref('gsm_exchange').on('value', function(snap) {
+    var data = snap.val();
+    if (data) {
+      excPhones = Array.isArray(data) ? data.filter(Boolean) : Object.values(data).filter(Boolean);
+      refreshExcSelects();
+    } else {
+      db.ref('gsm_exchange').set(excPhones);
+    }
+  }, function() {});
+}
+
 function saveData() {
-  localStorage.setItem('gsm_phones',     JSON.stringify(phones));
-  localStorage.setItem('gsm_accessories',JSON.stringify(accessories));
-  localStorage.setItem('gsm_exchange',   JSON.stringify(excPhones));
+  db.ref('gsm_phones').set(phones);
+  db.ref('gsm_accessories').set(accessories);
+  db.ref('gsm_exchange').set(excPhones);
 }
 
 /* ══════════════════════════════════════
    ADMIN — Auth
 ══════════════════════════════════════ */
 function admOpenLogin() {
+  /* إذا كانت الجلسة لا تزال نشطة، افتح اللوحة مباشرة */
+  if (firebase.auth().currentUser) { admOpenPanel(); return; }
   document.getElementById('adm-overlay').classList.add('open');
+  document.getElementById('adm-email-input').value = '';
   document.getElementById('adm-pwd-input').value = '';
   document.getElementById('adm-pwd-err').style.display = 'none';
-  setTimeout(function(){ document.getElementById('adm-pwd-input').focus(); }, 100);
+  setTimeout(function(){ document.getElementById('adm-pwd-input').focus(); }, 80);
 }
 function admCloseLogin() {
   document.getElementById('adm-overlay').classList.remove('open');
 }
 function admLogin() {
-  var val = document.getElementById('adm-pwd-input').value;
-  if (val === 'admin123') {
-    admCloseLogin();
-    admOpenPanel();
-  } else {
-    document.getElementById('adm-pwd-err').style.display = 'block';
-    document.getElementById('adm-pwd-input').value = '';
-    document.getElementById('adm-pwd-input').focus();
-  }
+  var email = document.getElementById('adm-email-input').value.trim();
+  var pwd   = document.getElementById('adm-pwd-input').value;
+  var btn   = document.getElementById('adm-login-btn');
+  var errEl = document.getElementById('adm-pwd-err');
+  if (!email || !pwd) { errEl.textContent = '⚠️ أدخل كلمة المرور'; errEl.style.display = 'block'; return; }
+  btn.textContent = '⏳';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(function() {
+      return firebase.auth().signInWithEmailAndPassword(email, pwd);
+    })
+    .then(function() {
+      btn.textContent = 'دخول';
+      btn.disabled = false;
+      admCloseLogin();
+      admOpenPanel();
+    })
+    .catch(function() {
+      btn.textContent = 'دخول';
+      btn.disabled = false;
+      errEl.textContent = '❌ كلمة المرور خاطئة';
+      errEl.style.display = 'block';
+      document.getElementById('adm-pwd-input').value = '';
+      document.getElementById('adm-pwd-input').focus();
+    });
 }
 function admOpenPanel() {
   document.getElementById('adm-panel').classList.add('open');
   admTab('phones');
 }
 function admClose() {
+  /* لا نُسجّل الخروج — نُبقي الجلسة لدخول سريع في المرة القادمة */
   document.getElementById('adm-panel').classList.remove('open');
   renderProducts(phones, 'phones-grid');
   renderProducts(accessories, 'accessories-grid');
@@ -1699,11 +1772,8 @@ function admRefreshExcSelects() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  loadData();
-  renderProducts(phones, 'phones-grid');
-  renderProducts(accessories, 'accessories-grid');
   populateWilayas();
-  excPopulateSelects();
+  loadData();
 });
 </script>
 
@@ -1714,11 +1784,14 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="adm-overlay" id="adm-overlay">
   <div class="adm-pwd-box">
     <h3>🔐 لوحة التحكم</h3>
-    <p>أدخل رمز الدخول للمتابعة</p>
+    <p>أدخل بياناتك للدخول</p>
+    <input class="adm-pwd-input" id="adm-email-input" type="email" placeholder="SMARTPHONES"
+      style="margin-bottom:10px"
+      onkeydown="if(event.key==='Enter')document.getElementById('adm-pwd-input').focus()" />
     <input class="adm-pwd-input" id="adm-pwd-input" type="password" placeholder="••••••••"
       onkeydown="if(event.key==='Enter')admLogin()" />
-    <button class="adm-pwd-btn" onclick="admLogin()">دخول</button>
-    <div class="adm-pwd-err" id="adm-pwd-err">❌ رمز خاطئ، حاول مجدداً</div>
+    <button class="adm-pwd-btn" onclick="admLogin()" id="adm-login-btn">دخول</button>
+    <div class="adm-pwd-err" id="adm-pwd-err">❌ بيانات خاطئة، حاول مجدداً</div>
     <button onclick="admCloseLogin()" style="margin-top:14px;background:none;border:none;color:#555;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;">إلغاء</button>
   </div>
 </div>
