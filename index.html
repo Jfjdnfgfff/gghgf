@@ -1535,18 +1535,25 @@ function loadData() {
   }, function() {});
 }
 
-function saveData() {
+function doWrite() {
   var updates = {};
   updates['gsm_phones']      = phones;
   updates['gsm_accessories'] = accessories;
   updates['gsm_exchange']    = excPhones;
   db.ref().update(updates)
-    .then(function() {
-      showSaveToast('✅ تم الحفظ بنجاح');
-    })
-    .catch(function(err) {
-      showSaveToast('❌ فشل الحفظ: ' + err.message);
-    });
+    .then(function() { showSaveToast('✅ تم الحفظ بنجاح'); })
+    .catch(function(err) { showSaveToast('❌ فشل الحفظ: ' + err.message); });
+}
+function saveData() {
+  var user = firebase.auth().currentUser;
+  if (user) {
+    doWrite();
+  } else {
+    showSaveToast('⏳ جاري التحضير...');
+    firebase.auth().signInAnonymously()
+      .then(function() { doWrite(); })
+      .catch(function(err) { showSaveToast('❌ خطأ في الاتصال: ' + err.message); });
+  }
 }
 function showSaveToast(msg) {
   var t = document.getElementById('save-toast');
