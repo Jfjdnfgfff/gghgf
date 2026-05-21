@@ -770,9 +770,10 @@
     .adm-pwd-input {
       width:100%; padding:12px 16px; border-radius:10px; font-size:16px;
       background:rgba(255,255,255,0.05); border:1px solid rgba(232,104,42,0.25);
-      color:#fff; outline:none; text-align:center; letter-spacing:4px;
+      color:#fff; outline:none; text-align:center; letter-spacing:2px;
       font-family:'Cairo',sans-serif; margin-bottom:14px;
       transition: border-color 0.2s;
+      caret-color: #E8682A;
     }
     .adm-pwd-input:focus { border-color:#E8682A; }
     .adm-pwd-btn {
@@ -1539,7 +1540,7 @@ function admOpenLogin() {
   document.getElementById('adm-email-input').value = '';
   document.getElementById('adm-pwd-input').value = '';
   document.getElementById('adm-pwd-err').style.display = 'none';
-  setTimeout(function(){ document.getElementById('adm-pwd-input').focus(); }, 80);
+  setTimeout(function(){ document.getElementById('adm-email-input').focus(); }, 80);
 }
 function admCloseLogin() {
   document.getElementById('adm-overlay').classList.remove('open');
