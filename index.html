@@ -1525,30 +1525,17 @@ function loadData() {
 }
 
 function saveData() {
-  if (!firebase.auth().currentUser) {
-    alert('❌ انتهت الجلسة — أعد تسجيل الدخول');
-    admClose();
-    admOpenLogin();
-    return;
-  }
-  var user = firebase.auth().currentUser;
-  user.getIdToken(true).then(function() {
-    var updates = {};
-    updates['gsm_phones']      = phones;
-    updates['gsm_accessories'] = accessories;
-    updates['gsm_exchange']    = excPhones;
-    db.ref().update(updates)
-      .then(function() {
-        showSaveToast('✅ تم الحفظ بنجاح');
-      })
-      .catch(function(err) {
-        showSaveToast('❌ فشل الحفظ: ' + err.message);
-      });
-  }).catch(function() {
-    alert('❌ انتهت الجلسة — أعد تسجيل الدخول');
-    admClose();
-    admOpenLogin();
-  });
+  var updates = {};
+  updates['gsm_phones']      = phones;
+  updates['gsm_accessories'] = accessories;
+  updates['gsm_exchange']    = excPhones;
+  db.ref().update(updates)
+    .then(function() {
+      showSaveToast('✅ تم الحفظ بنجاح');
+    })
+    .catch(function(err) {
+      showSaveToast('❌ فشل الحفظ: ' + err.message);
+    });
 }
 function showSaveToast(msg) {
   var t = document.getElementById('save-toast');
@@ -1571,52 +1558,39 @@ function showSaveToast(msg) {
 /* ══════════════════════════════════════
    ADMIN — Auth
 ══════════════════════════════════════ */
+var ADM_PWD = 'admin123';
+var admLoggedIn = false;
+
 function admOpenLogin() {
-  /* إذا كانت الجلسة لا تزال نشطة، افتح اللوحة مباشرة */
-  if (firebase.auth().currentUser) { admOpenPanel(); return; }
+  if (admLoggedIn) { admOpenPanel(); return; }
   document.getElementById('adm-overlay').classList.add('open');
-  document.getElementById('adm-email-input').value = '';
   document.getElementById('adm-pwd-input').value = '';
   document.getElementById('adm-pwd-err').style.display = 'none';
-  setTimeout(function(){ document.getElementById('adm-email-input').focus(); }, 80);
+  setTimeout(function(){ document.getElementById('adm-pwd-input').focus(); }, 80);
 }
 function admCloseLogin() {
   document.getElementById('adm-overlay').classList.remove('open');
 }
 function admLogin() {
-  var email = document.getElementById('adm-email-input').value.trim();
   var pwd   = document.getElementById('adm-pwd-input').value;
-  var btn   = document.getElementById('adm-login-btn');
   var errEl = document.getElementById('adm-pwd-err');
-  if (!email || !pwd) { errEl.textContent = '⚠️ أدخل كلمة المرور'; errEl.style.display = 'block'; return; }
-  btn.textContent = '⏳';
-  btn.disabled = true;
-  errEl.style.display = 'none';
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    .then(function() {
-      return firebase.auth().signInWithEmailAndPassword(email, pwd);
-    })
-    .then(function() {
-      btn.textContent = 'دخول';
-      btn.disabled = false;
-      admCloseLogin();
-      admOpenPanel();
-    })
-    .catch(function() {
-      btn.textContent = 'دخول';
-      btn.disabled = false;
-      errEl.textContent = '❌ كلمة المرور خاطئة';
-      errEl.style.display = 'block';
-      document.getElementById('adm-pwd-input').value = '';
-      document.getElementById('adm-pwd-input').focus();
-    });
+  if (!pwd) { errEl.textContent = '⚠️ أدخل كلمة المرور'; errEl.style.display = 'block'; return; }
+  if (pwd === ADM_PWD) {
+    admLoggedIn = true;
+    admCloseLogin();
+    admOpenPanel();
+  } else {
+    errEl.textContent = '❌ كلمة المرور خاطئة';
+    errEl.style.display = 'block';
+    document.getElementById('adm-pwd-input').value = '';
+    document.getElementById('adm-pwd-input').focus();
+  }
 }
 function admOpenPanel() {
   document.getElementById('adm-panel').classList.add('open');
   admTab('phones');
 }
 function admClose() {
-  /* لا نُسجّل الخروج — نُبقي الجلسة لدخول سريع في المرة القادمة */
   document.getElementById('adm-panel').classList.remove('open');
   renderProducts(phones, 'phones-grid');
   renderProducts(accessories, 'accessories-grid');
@@ -1823,10 +1797,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="adm-overlay" id="adm-overlay">
   <div class="adm-pwd-box">
     <h3>🔐 لوحة التحكم</h3>
-    <p>أدخل بياناتك للدخول</p>
-    <input class="adm-pwd-input" id="adm-email-input" type="email" placeholder="SMARTPHONES"
-      style="margin-bottom:10px"
-      onkeydown="if(event.key==='Enter')document.getElementById('adm-pwd-input').focus()" />
+    <p>أدخل كلمة المرور للدخول</p>
     <input class="adm-pwd-input" id="adm-pwd-input" type="password" placeholder="••••••••"
       onkeydown="if(event.key==='Enter')admLogin()" />
     <button class="adm-pwd-btn" onclick="admLogin()" id="adm-login-btn">دخول</button>
