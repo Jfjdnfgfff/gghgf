@@ -1525,9 +1525,47 @@ function loadData() {
 }
 
 function saveData() {
-  db.ref('gsm_phones').set(phones);
-  db.ref('gsm_accessories').set(accessories);
-  db.ref('gsm_exchange').set(excPhones);
+  if (!firebase.auth().currentUser) {
+    alert('❌ انتهت الجلسة — أعد تسجيل الدخول');
+    admClose();
+    admOpenLogin();
+    return;
+  }
+  var user = firebase.auth().currentUser;
+  user.getIdToken(true).then(function() {
+    var updates = {};
+    updates['gsm_phones']      = phones;
+    updates['gsm_accessories'] = accessories;
+    updates['gsm_exchange']    = excPhones;
+    db.ref().update(updates)
+      .then(function() {
+        showSaveToast('✅ تم الحفظ بنجاح');
+      })
+      .catch(function(err) {
+        showSaveToast('❌ فشل الحفظ: ' + err.message);
+      });
+  }).catch(function() {
+    alert('❌ انتهت الجلسة — أعد تسجيل الدخول');
+    admClose();
+    admOpenLogin();
+  });
+}
+function showSaveToast(msg) {
+  var t = document.getElementById('save-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'save-toast';
+    t.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);'
+      + 'background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:30px;'
+      + 'font-family:Cairo,sans-serif;font-size:14px;z-index:99999;'
+      + 'border:1px solid rgba(232,104,42,0.5);box-shadow:0 4px 20px rgba(0,0,0,0.5);'
+      + 'transition:opacity 0.3s;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._to);
+  t._to = setTimeout(function(){ t.style.opacity = '0'; }, 2500);
 }
 
 /* ══════════════════════════════════════
