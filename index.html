@@ -1220,6 +1220,17 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.database();
 
+/* تسجيل دخول مجهول تلقائي لتفعيل صلاحية الكتابة في Firebase */
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(function() {
+  if (!firebase.auth().currentUser) {
+    return firebase.auth().signInAnonymously();
+  }
+}).catch(function() {});
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) { firebase.auth().signInAnonymously().catch(function(){}); }
+});
+
 // ═══════════════════ DATA ═══════════════════
 var phones = [
   { id:"ph1", name:"iPhone 15 Pro Max", price:230000, desc:"Design titane, puce A17 Pro, appareil photo 48 MP. L'excellence Apple.", img:"https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&q=80" },
